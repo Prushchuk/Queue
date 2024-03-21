@@ -1,20 +1,86 @@
-// ConsoleApplication49.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
 #include <iostream>
 
-int main()
-{
-    std::cout << "Hello World!\n";
+class CharQueue {
+private:
+    struct Node {
+        char* data;
+        Node* next;
+        Node(const char* value) {
+            int len = 0;
+            while (value[len] != '\0') {
+                len++;
+            }
+            data = new char[len + 1];
+            for (int i = 0; i <= len; ++i) {
+                data[i] = value[i];
+            }
+            next = nullptr;
+        }
+        ~Node() {
+            delete[] data;
+        }
+    };
+
+    Node* frontPtr;
+    Node* rearPtr;
+
+public:
+    CharQueue() : frontPtr(nullptr), rearPtr(nullptr) {}
+
+    ~CharQueue() {
+        while (!isEmpty()) {
+            dequeue();
+        }
+    }
+
+    bool isEmpty() const {
+        return frontPtr == nullptr;
+    }
+
+    void enqueue(const char* value) {
+        Node* newNode = new Node(value);
+        if (isEmpty()) {
+            frontPtr = rearPtr = newNode;
+        }
+        else {
+            rearPtr->next = newNode;
+            rearPtr = newNode;
+        }
+    }
+
+    void dequeue() {
+        if (!isEmpty()) {
+            Node* temp = frontPtr;
+            frontPtr = frontPtr->next;
+            delete temp;
+            if (frontPtr == nullptr) {
+                rearPtr = nullptr;
+            }
+        }
+        else {
+            std::cout << "Queue is empty, cannot dequeue.\n";
+        }
+    }
+
+    const char* front() const {
+        if (!isEmpty()) {
+            return frontPtr->data;
+        }
+        else {
+            std::cout << "Queue is empty, cannot retrieve front element.\n";
+            return nullptr;
+        }
+    }
+};
+
+int main() {
+    CharQueue queue;
+    queue.enqueue("Hello");
+    queue.enqueue("World");
+    queue.enqueue("!");
+
+    while (!queue.isEmpty()) {
+        std::cout << queue.front() << " ";
+        queue.dequeue();
+    }
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
